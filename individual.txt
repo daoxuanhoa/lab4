@@ -1,0 +1,29 @@
+1/ ¬ывести суммарный продажи абонементов каждого типа.
+
+CONNECT 'D:/XUANHOA.FDB' USER 'SYSDBA' PASSWORD 'masterkey';
+create view SUM_PRICE AS select
+    SEASONTICKET_TYPE.name_ticket as Name,
+    SEASONTICKET_TYPE.PRICE * COUNT(SEASON_TICKET.ID_SEASONTICKET_TYPE)
+     as Sell from SEASONTICKET_TYPE, SEASON_TICKET
+    where SEASON_TICKET.ID_SEASONTICKET_TYPE = SEASONTICKET_TYPE.ID_SEASONTICKET_TYPE group by
+    SEASONTICKET_TYPE.name_ticket,SEASONTICKET_TYPE.PRICE order by Sell asc;
+
+2/ ¬ывести клиентов, которые принесли более заданного количества денег за заданный период.
+CONNECT 'D:/XUANHOA.FDB' USER 'SYSDBA' PASSWORD 'masterkey';
+create view buying23 as select
+    clients.name_client as id_client,
+    sum(seasonticket_type.price) as BuyingSum
+    from clients, season_ticket , seasonticket_type
+    where season_ticket.id_seasonticket_type = seasonticket_type.id_seasonticket_type
+    and clients.id_client = season_ticket.id_client
+    group by clients.name_client
+    having sum(seasonticket_type.price) > 20000
+    order by BuyingSum desc;
+
+3/ ”далить неиспользуемые типы абонементов.
+create procedure del_SEASONTICKET_TYPE as
+begin
+    delete from SEASONTICKET_TYPE where ID_ SEASONTICKET_TYPE not in (select ID_ SEASONTICKET_TYPE from SEASON_TICKET);
+end;
+
+
